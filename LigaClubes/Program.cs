@@ -184,16 +184,42 @@ namespace TP1
                                 continue;
                             }
 
-                            //CLUB
+                            //CLUB-categoria
 
-                            //CATEGORIA
+                            Console.WriteLine("Ingrese el nombre del club:");
+                            equipo.Club = Console.ReadLine();
 
+                            while (true) {
+                                Console.WriteLine("Ingrese la categoria");
+                                Console.WriteLine("Infantiles");
+                                Console.WriteLine("Cadetes");
+                                Console.WriteLine("Juveniles");
+                                Console.WriteLine("Primera");
+                                Console.WriteLine("Veteranos");
 
+                                equipo.Categoria = Console.ReadLine();
+
+                                if (
+                                    equipo.Categoria.ToUpper() == "INFANTILES" ||
+                                    equipo.Categoria.ToUpper() == "CADETES" ||
+                                    equipo.Categoria.ToUpper() == "JUVENILES" ||
+                                    equipo.Categoria.ToUpper() == "PRIMERA" ||
+                                    equipo.Categoria.ToUpper() == "VETERANOS"
+                                    )
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("categoria no valida");
+                                }
+
+                            }
+                            equipos.Add(equipo);
+
+                            Console.WriteLine("el equipo fue agregado correctamente");
+                            Console.WriteLine("-------------------------");
                         }
-
-
-
-
 
 
                     }
