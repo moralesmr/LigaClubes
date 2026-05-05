@@ -114,6 +114,16 @@ namespace TP1
 
         static List<Jugador> jugadores = new List<Jugador>();
 
+
+        struct Equipo
+        {
+            public string Nombre;
+            public string Club;
+            public string Categoria;
+        }
+
+        static List<Equipo> equipos = new List<Equipo>();
+
         static void Main(string[] args)
         {
             Console.WriteLine("Bienvenido al sistema de gestión de liga deportiva del GRUPO 33");
@@ -135,13 +145,63 @@ namespace TP1
                     Console.WriteLine("Alta, baja y modificación de Equipos");
                     //ACA VA ALTA - BAJA - MODIFICACIÓN DE EQIOPOS
                     Console.WriteLine("-------------------------");
-                    Console.WriteLine("Prueba de git");
+                    while (true)
+                    {
+                        Console.WriteLine("ABM DE EQUIPOS");
+                        Console.WriteLine("1 - Alta");
+                        Console.WriteLine("2 - Baja");
+                        Console.WriteLine("3 - Modificacion");
+                        Console.WriteLine("4 - Listar equipos");
+                        Console.WriteLine("5 - Salir");
+                        Console.WriteLine("-------------------------");
+
+                        string opcionEquipo = Console.ReadLine();
+
+                        if (opcionEquipo == "1")
+                        {
+                            Console.WriteLine("Alta de equipos");
+                            Equipo equipo;
+
+                            //NOMBRE DEL EQUIPO
+                            Console.WriteLine("Ingrese el nombre del equipo:");
+                            equipo.Nombre = Console.ReadLine();
+
+                            bool existe = false;
+
+                            foreach (var e in equipos)
+                            {
+                                if (e.Nombre.ToUpper() == equipo.Nombre.ToUpper())
+                                {
+                                    existe = true;
+                                    break;
+                                }
+                            }
+
+                            if (existe)
+                            {
+                                Console.WriteLine("Ese equipo ya existe");
+                                Console.WriteLine("-------------------------");
+                                continue;
+                            }
+
+                            //CLUB
+
+                            //CATEGORIA
+
+
+                        }
 
 
 
 
 
+
+                    }
                 }
+
+
+
+
                 else if (opcion == "2")
                 {
                     Console.WriteLine("'Alta, baja y modificación de Jugadores'");
