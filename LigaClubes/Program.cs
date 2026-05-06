@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Reflection;
 
 /*
 Liga deportiva C#
@@ -107,8 +109,9 @@ namespace TP1
             public string Nombre;
             public string Apellido;
             public int Edad;
-            public List<string> Equipos;
             public bool Seguro;
+            public List<string> Equipos;
+            public List<string> Clubes;
             public bool Afiliado;
         }
 
@@ -342,14 +345,30 @@ namespace TP1
                             Console.WriteLine("-------------------------");
                         }
 
+                        else if (opcionEquipo == "4")
+                        {
+                            Console.WriteLine("\n===== LISTA DE EQUIPOS =====");
+
+                            if (equipos.Count == 0)
+                            {
+                                Console.WriteLine("No hay equipos cargados");
+                            }
+                            else
+                            {
+                                foreach (var e in equipos)
+                                {
+                                    Console.WriteLine("-------------------");
+                                    Console.WriteLine("Nombre: " + e.Nombre);
+                                    Console.WriteLine("Club: " + e.Club);
+                                    Console.WriteLine("Categoria: " + e.Categoria);
+                                }
+                            }
+                        }
+
 
 
                     }
                 }
-
-
-
-
                 else if (opcion == "2")
                 {
                     Console.WriteLine("'Alta, baja y modificación de Jugadores'");
@@ -371,7 +390,12 @@ namespace TP1
                         {
                             //ACA VA ALTA DE JUGADORES
                             Console.WriteLine("Alta de jugadores");
-                            Jugador jugador;
+
+                            Jugador jugador = new Jugador
+                            {
+                                Equipos = new List<string>(),
+                                Clubes = new List<string>()
+                            };
 
                             int dni;
                             Console.WriteLine("Ingrese el DNI del jugador:");
@@ -471,8 +495,9 @@ namespace TP1
                                 {
                                     Console.WriteLine("Ingrese S o N");
                                 }
+
+
                             }
-                            jugadores.Add(jugador);
 
                             Console.WriteLine("-------------------------");
                             Console.WriteLine("Jugador agregado correctamente");
@@ -619,7 +644,6 @@ namespace TP1
                                     //INGRESO A MODIFICACIÓN DE EQUIPOS
                                     Console.WriteLine("Equipos asignados:");
                                     for (int i = 0; i < j.Equipos.Count; i++)
-
                                     {
                                         Console.WriteLine("Equipo " + i + 1 + ": " + j.Equipos[i]);
                                     }
@@ -701,6 +725,9 @@ namespace TP1
                                         Console.WriteLine("Ingrese S o N");
                                     }
                                     continue;
+
+                                jugadores[index] = j;
+
                                 }
                                 else if (modificarlo == "N")
                                 {
@@ -732,38 +759,120 @@ namespace TP1
                 }
                 else if (opcion == "3")
                 {
-                    Console.WriteLine("Funcionalidades");
+                    Console.WriteLine("Funcionalidades:");
                     //ACA VAN LAS FUNCIONALIDADES
                     Console.WriteLine("-------------------------");
+                    while (true)
+                    {
+                        Console.WriteLine("--> Por favor elija una opción:");
+                        Console.WriteLine("1 - Listar jugadores afiliados");
+                        Console.WriteLine("2 - Listar jugadores por equipo");
+                        Console.WriteLine("3 - Salir");
+                        Console.WriteLine("-------------------------");
+                        var funcionalidad = Console.ReadLine();
+                        Console.WriteLine("Usted ingresó: " + funcionalidad);
+                        Console.WriteLine("-------------------------");
+                        if (funcionalidad == "1")
+                        {
+                            Console.WriteLine("Jugadores afiliados:");
+                            bool hayAfiliados = false;
 
+                            foreach (var j in jugadores)
+                            {
+                                if (j.Afiliado)
+                                {
+                                    Console.WriteLine($"- {j.Nombre} {j.Apellido}");
+                                    hayAfiliados = true;
 
+                                }
+                                else
+                                {
+                                    Console.WriteLine("No se encontraron jugadores afiliados");
+                                }
+                            }
+                        }
+                        else if (funcionalidad == "2")
+                        {
+                            Console.WriteLine("Equipos disponibles:");
+                            for (int i = 0; i < equipos.Count; i++)
+                            {
+                                Console.WriteLine($"{i + 1} - {equipos[i].Nombre}");
+                            }
 
+                            Console.WriteLine("Ingrese el número del equipo:");
+                            int numeroEquipo;
 
+                            while (!int.TryParse(Console.ReadLine(), out numeroEquipo) || numeroEquipo < 1 || numeroEquipo > equipos.Count)
+                            {
+                                Console.WriteLine("Número inválido");
+                            }
+
+                            string nombreEquipo = equipos[numeroEquipo - 1].Nombre;
+
+                            bool hay = false;
+
+                            foreach (var j in jugadores)
+                            {
+                                if (j.Equipos.Contains(nombreEquipo))
+                                {
+                                    Console.WriteLine($"{j.Nombre} {j.Apellido}");
+                                    hay = true;
+                                }
+                            }
+
+                            if (!hay)
+                            {
+                                Console.WriteLine("No hay jugadores en este equipo");
+                            }
+
+                        }
+                        else if (funcionalidad == "3") 
+                        {
+                            Console.WriteLine("Usted salió de funcionalidades");
+                            Console.WriteLine("-------------------------");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine(funcionalidad + " , no es un ingreso válido!.");
+                            Console.WriteLine("-------------------------");
+                        }
+                    }
                 }
                 else if (opcion == "4")
-                {
-                    Console.WriteLine("4 - Reportes adicionales");
-                    //ACA VAN LOS REPORTES ADICIONALES
-                    Console.WriteLine("-------------------------");
+                        {
+                            Console.WriteLine("4 - Reportes adicionales");
+                            //ACA VAN LOS REPORTES ADICIONALES
+                            Console.WriteLine("-------------------------");
 
-                }
+                            /**Reportes adicionales
+- Cantidad de jugadores por equipo
+-Equipo con mayor cantidad de jugadores
+- Equipos que no alcanzan el cupo mínimo requerido
+- Equipos sin jugadores*/
+
+
+
+                        }
                 else if (opcion == "5")
-                {
-                    Console.WriteLine("Usted salió del sistema. Vuelva pronto y ponganos un 10!");
-                    Console.WriteLine("Vuelva pronto y ponganos un 10!");
-                    Console.WriteLine("Adios!.");
-                    Console.WriteLine("-------------------------");
-                    break;
-                }
+                        {
+                            Console.WriteLine("Usted salió del sistema. Vuelva pronto y ponganos un 10!");
+                            Console.WriteLine("Vuelva pronto y ponganos un 10!");
+                            Console.WriteLine("Adios!.");
+                            Console.WriteLine("-------------------------");
+                            break;
+                        }
                 else
-                {
-                    Console.WriteLine(opcion + " ,no es un ingreso válido.");
-                    Console.WriteLine("-------------------------");
-                }
+                        {
+                            Console.WriteLine(opcion + " ,no es un ingreso válido.");
+                            Console.WriteLine("-------------------------");
+                        }
 
-            }
-
-        }
-
-    }
 }
+
+}
+
+}
+}
+
+
