@@ -342,6 +342,26 @@ namespace TP1
                             Console.WriteLine("-------------------------");
                         }
 
+                        else if (opcionEquipo == "4")
+                        {
+                            Console.WriteLine("\n===== LISTA DE EQUIPOS =====");
+
+                            if (equipos.Count == 0)
+                            {
+                                Console.WriteLine("No hay equipos cargados");
+                            }
+                            else
+                            {
+                                foreach (var e in equipos)
+                                {
+                                    Console.WriteLine("-------------------");
+                                    Console.WriteLine("Nombre: " + e.Nombre);
+                                    Console.WriteLine("Club: " + e.Club);
+                                    Console.WriteLine("Categoria: " + e.Categoria);
+                                }
+                            }
+                        }
+
 
 
                     }
