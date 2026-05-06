@@ -221,6 +221,128 @@ namespace TP1
                             Console.WriteLine("-------------------------");
                         }
 
+                        //BAJA
+                        else if (opcionEquipo == "2")
+                        {
+                            Console.WriteLine("Ingrese el nombre del equipo a eliminar:");
+                            string nombre = Console.ReadLine();
+
+                            int index = -1;
+
+                            //BUSCAR EQUIPO
+                            for (int i = 0; i < equipos.Count; i++)
+                            {
+                                if (equipos[i].Nombre.ToUpper() == nombre.ToUpper())
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
+
+                            if (index == -1)
+                            {
+                                Console.WriteLine("Equipo no encontrado");
+                            }
+                            else
+                            {
+                                //VALIDAR SI TIENE JUGADORES
+                                bool tieneJugadores = false;
+
+                                foreach (var j in jugadores)
+                                {
+                                    if (j.Equipos.Contains(equipos[index].Nombre))
+                                    {
+                                        tieneJugadores = true;
+                                        break;
+                                    }
+                                }
+
+                                if (tieneJugadores)
+                                {
+                                    Console.WriteLine("No se puede eliminar porque el equipo tiene jugadores");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Seguro que desea eliminarlo? S/N");
+                                    string confirmar = Console.ReadLine().ToUpper();
+
+                                    if (confirmar == "S")
+                                    {
+                                        equipos.RemoveAt(index);
+                                        Console.WriteLine("Equipo eliminado");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Operacion cancelada");
+                                    }
+                                }
+                            }
+
+                            Console.WriteLine("-------------------------");
+                        }
+
+                        //MODIFICACION
+                        else if (opcionEquipo == "3")
+                        {
+                            Console.WriteLine("Ingrese el nombre del equipo a modificar:");
+                            string nombre = Console.ReadLine();
+
+                            int index = -1;
+
+                            //BUSCAR EQUIPO
+                            for (int i = 0; i < equipos.Count; i++)
+                            {
+                                if (equipos[i].Nombre.ToUpper() == nombre.ToUpper())
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
+
+                            if (index == -1)
+                            {
+                                Console.WriteLine("Equipo no encontrado");
+                            }
+                            else
+                            {
+                                Equipo e = equipos[index];
+
+                                Console.WriteLine("Nombre actual: " + e.Nombre);
+                                Console.WriteLine("Ingrese nuevo nombre, sino apriete Enter para dejar igual:");
+                                string nuevoNombre = Console.ReadLine();
+
+                                if ((nuevoNombre != ""))
+                                {
+                                    e.Nombre = nuevoNombre;
+                                }
+
+                                Console.WriteLine("Club actual: " + e.Club);
+                                Console.WriteLine("Ingrese nuevo club, sino apriete Enter para dejar igual:");
+                                string nuevoClub = Console.ReadLine();
+
+                                if ((nuevoClub != ""))
+                                {
+                                    e.Club = nuevoClub;
+                                }
+
+                                Console.WriteLine("Categoria actual: " + e.Categoria);
+                                Console.WriteLine("Ingrese nueva categoria, sino apriete Enter para dejar igual:");
+                                string nuevaCategoria = Console.ReadLine();
+
+                                if ((nuevaCategoria != ""))
+                                {
+                                    e.Categoria = nuevaCategoria;
+                                }
+
+                                equipos[index] = e;
+
+                                Console.WriteLine("Equipo modificado correctamente");
+                            }
+
+                            Console.WriteLine("-------------------------");
+                        }
+
+
 
                     }
                 }
