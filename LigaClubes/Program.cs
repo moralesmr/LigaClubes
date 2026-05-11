@@ -774,7 +774,68 @@ namespace TP1
                         {
                             Console.WriteLine("4 - Reportes adicionales");
                             //ACA VAN LOS REPORTES ADICIONALES
-                            Console.WriteLine("-------------------------");
+
+                            Console.WriteLine("CANTIDAD DE JUGADORES POR EQUIPO");
+
+                            foreach (var equipo in equipos)
+                            {
+                                int contador = 0;
+
+                                foreach (var jugador in jugadores)
+                                {
+                                    bool pertenece = false;
+
+                                    foreach (var eq in jugador.Equipos)
+                                    {
+                                        if (eq.ToUpper() == equipo.Nombre.ToUpper())
+                                        {
+                                            pertenece = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (pertenece)
+                                    {
+                                        contador++;
+                                    }
+                                }
+
+                                Console.WriteLine(equipo.Nombre + " -> " + contador + " jugadores");
+                            }
+
+                                //EQUIPOS SIN JUGADORES
+
+                                Console.WriteLine("EQUIPOS SIN JUGADORES");
+
+                                foreach (var equipo in equipos)
+                                {
+                                    bool tieneJugadores = false;
+
+                                    foreach (var jugador in jugadores)
+                                    {
+                                        foreach (var eq in jugador.Equipos)
+                                        {
+                                            if (eq.ToUpper() == equipo.Nombre.ToUpper())
+                                            {
+                                                tieneJugadores = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (tieneJugadores)
+                                        {
+                                            break;
+                                        }
+                                    }
+
+                                    if (!tieneJugadores)
+                                    {
+                                        Console.WriteLine(equipo.Nombre);
+                                    }
+                                }
+
+
+                                Console.WriteLine("-------------------------");
 
                         }
                         else if (opcion == "5")
