@@ -108,16 +108,14 @@ namespace TP1
                     case "1":
                         Console.WriteLine("Alta, baja y modificación de Equipos");
                         Console.WriteLine("-------------------------");
-                        MenuABM();
+                        MenuABMEquipos();
                         break;
                     case "2":
                         Console.WriteLine("Alta, baja y modificación de Jugadores");
                         Console.WriteLine("-------------------------");
-                        MenuABM();
+                        MenuABMJugadores();
                         break;
                     case "3":
-                        Console.WriteLine("Funcionalidades");
-                        Console.WriteLine("-------------------------");
                         MenuFuncionalidades();
                         break;
                     case "4":
@@ -138,13 +136,20 @@ namespace TP1
         /*Funcionalidades Base(obligatorias)
         -----------------------------------
         */
-        static void MenuABM()
+
+        /*- ABM de Equipos
+        * Alta(con asignación automática de nombre)
+        * Baja
+        * Modificación*/
+
+        //-------------------------------------ABM de equipos
+        static void MenuABMEquipos()
         {
             while (true)
             {
-                Console.WriteLine("1 - Alta");
-                Console.WriteLine("2 - Baja");
-                Console.WriteLine("3 - Modificacion");
+                Console.WriteLine("1 - Alta de equipos");
+                Console.WriteLine("2 - Baja de equipos");
+                Console.WriteLine("3 - Modificacion de equipos");
                 Console.WriteLine("4 - Salir");
                 Console.WriteLine("-------------------------");
                 string opcionAMB = Console.ReadLine();
@@ -152,22 +157,19 @@ namespace TP1
                 switch (opcionAMB)
                 {
                     case "1":
-                        Console.WriteLine("Alta");
                         Console.WriteLine("-------------------------");
-                        AltaJugador();
+                        AltaEquipos();
                         break;
                     case "2":
-                        Console.WriteLine("Baja");
                         Console.WriteLine("-------------------------");
-                        BajaJugador();
+                        BajaEquipos();
                         break;
                     case "3":
-                        Console.WriteLine("Modificación");
                         Console.WriteLine("-------------------------");
-                        ModificarJugador();
+                        ModificarEquipos();
                         break;
                     case "4":
-                        Console.WriteLine("Usted salió del sistema AMB");
+                        Console.WriteLine("Usted salió del sistema de modificación de jugadores");
                         return;
                     default:
                         Console.WriteLine("Ingrese una opción válida");
@@ -176,13 +178,6 @@ namespace TP1
 
             }
         }
-
-        /*- ABM de Equipos
-        * Alta(con asignación automática de nombre)
-        * Baja
-        * Modificación*/
-
-        //-------------------------------------ABM de equipos
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
@@ -380,9 +375,61 @@ namespace TP1
         * Modificación*/
 
         //-------------------------------------ABM de Jugadores
+        static void MenuABMJugadores()
+        {
+            while (true)
+            {
+                Console.WriteLine("1 - Alta de jugadores");
+                Console.WriteLine("2 - Baja de jugadores");
+                Console.WriteLine("3 - Modificacion de jugadores");
+                Console.WriteLine("4 - Salir");
+                Console.WriteLine("-------------------------");
+                string opcionAMB = Console.ReadLine();
+
+                switch (opcionAMB)
+                {
+                    case "1":
+                        Console.WriteLine("-------------------------");
+                        AltaJugador();
+                        break;
+                    case "2":
+                        Console.WriteLine("-------------------------");
+                        BajaJugador();
+                        break;
+                    case "3":
+                        Console.WriteLine("-------------------------");
+                        ModificarJugador();
+                        break;
+                    case "4":
+                        Console.WriteLine("Usted salió del sistema de modificación de jugadores");
+                        return;
+                    default:
+                        Console.WriteLine("Ingrese una opción válida");
+                        break;
+                }
+
+            }
+        }
+        static bool EdadValida(string categoria, int edad)
+        {
+            switch (categoria.ToUpper())
+            {
+                case "INFANTILES":
+                    return edad < 13;
+                case "CADETES":
+                    return edad >= 13 && edad <= 16;
+                case "JUVENILES":
+                    return edad > 16 && edad <= 18;
+                case "PRIMERA":
+                    return edad > 18;
+                case "VETERANOS":
+                    return edad > 35;
+                default:
+                    return false;
+            }
+        }
         static void AltaJugador()
         {
-            Console.Write(" de jugadores");
             Jugador jugador;
 
             int dni;
@@ -407,6 +454,7 @@ namespace TP1
             {
                 Console.WriteLine("El DNI ya está cargado");
                 Console.WriteLine("--------------------------------");
+                return;
             }
 
             //INGRESO DE NOMBRE
@@ -437,13 +485,44 @@ namespace TP1
                 Console.Write("equipo " + (i + 1) + " :");
                 string equipo = Console.ReadLine();
 
+                bool existeEquipo = false;
+
                 foreach (var e in equipos)
                 {
                     if (e.Nombre.ToUpper() == equipo.ToUpper())
                     {
-                        jugador.Equipos.Add(equipo);
+                        existeEquipo = true;
+                        break;
                     }
                 }
+                if (existeEquipo)
+                {
+                    string categoria = "";
+                    foreach (var e in equipos)
+                    {
+                        if(e.Nombre.ToUpper() == equipo.ToUpper())
+                        {
+                            categoria = e.Categoria;
+                            break;
+                        }
+                    }
+                    if (EdadValida(categoria, jugador.Edad))
+                    {
+                        jugador.Equipos.Add(equipo);
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("La edad del jugador no es compatible con la categoria del equipo");
+                        i--;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("El equipo no existe");
+                    i--;
+                }
+
             }
 
             //SEGURO
@@ -542,8 +621,6 @@ namespace TP1
         static void ModificarJugador()
         {
             //ACA VA MODIFICACIÓN DE JUGADORES
-            Console.WriteLine("Modificación de jugadores");
-            Console.WriteLine("-------------------------");
             Console.WriteLine("Ingrese el DNI del jugador que desea modificar:");
             int dni = int.Parse(Console.ReadLine());
 
@@ -628,17 +705,16 @@ namespace TP1
                     }
                     else
                     {
-                        Console.WriteLine("No se modificó la edad, ingrese un numero");
+                        Console.WriteLine("No se modificó la edad");
                         Console.WriteLine("--------------------------------");
                     }
 
                     //INGRESO A MODIFICACIÓN DE EQUIPOS
                     Console.WriteLine("Equipos asignados:");
                     for (int i = 0; i < j.Equipos.Count; i++)
-
-                    {
-                        Console.WriteLine("Equipo " + i + 1 + ": " + j.Equipos[i]);
-                    }
+                        {
+                            Console.WriteLine("Equipo " + (i + 1) + ": " + j.Equipos[i]);
+                        }
                     Console.WriteLine("--------------------------------");
 
                     Console.WriteLine("Desea modificarlos? S/N");
@@ -729,8 +805,8 @@ namespace TP1
                 }
             }
         }
-        
-        
+
+
         /*Tema B – Control Organizativo de Equipos
         ------------------------------------------
         El cliente necesita evaluar la estructura de sus equipos.
@@ -746,9 +822,10 @@ namespace TP1
         {
             while (true)
             {
+                Console.WriteLine("Menú funcionalidades");
                 Console.WriteLine("1 - Lista de jugadores afiliados");
                 Console.WriteLine("2 - Lista de jugadores por equipos");
-                Console.WriteLine("4 - Salir");
+                Console.WriteLine("3 - Salir");
                 Console.WriteLine("-------------------------");
                 string opcionFuncionalidad = Console.ReadLine();
 
@@ -785,6 +862,8 @@ namespace TP1
                     i++;
                 }
             }
+            Console.WriteLine("-------------------------");
+
         }
         static void ListarPorEquipo()
         {
@@ -816,24 +895,30 @@ namespace TP1
         {
             while (true)
             {
-                Console.WriteLine("1 - Lista de jugadores afiliados");
-                Console.WriteLine("2 - Lista de jugadores por equipos");
-                Console.WriteLine("4 - Salir");
+                Console.WriteLine("1 - Cantidad de jugadores por equipo");
+                Console.WriteLine("2 - Equipo con mayor cantidad de jugadores");
+                Console.WriteLine("3 - Equipos que no alcanzan el cupo mínimo requerido");
+                Console.WriteLine("4 - Equipos sin jugadores");
+                Console.WriteLine("5 - Salir");
                 Console.WriteLine("-------------------------");
-                string opcionFuncionalidad = Console.ReadLine();
+                string opcionReportes = Console.ReadLine();
 
-                switch (opcionFuncionalidad)
+                switch (opcionReportes)
                 {
                     case "1":
-                        ListarPorAfiliados();
-                        //Console.WriteLine("-------------------------");
+                        JugadoresPorEquipo();
                         break;
                     case "2":
-                        ListarPorEquipo();
-                        //Console.WriteLine("-------------------------");
+                        EquipoConMasCantidadDeJugadores();
                         break;
                     case "3":
-                        Console.WriteLine("Usted salió del sistema de funcionalidades");
+                        EquipoQueNoAlcanzanElCupo();
+                        break;
+                    case "4":
+                        EquipoSinJugadores();
+                        break;
+                    case "5":
+                        Console.WriteLine("Usted salió del sistema de reportes");
                         return;
                     default:
                         Console.WriteLine("Ingrese una opción válida");
@@ -841,8 +926,34 @@ namespace TP1
                 }
 
             }
-
+        }
+        static void JugadoresPorEquipo() { }
+        static void EquipoConMasCantidadDeJugadores()
+        {
+            string mejorEquipo = "";
+            int max = 0;
+            foreach(var e in equipos)
+            {
+                int contador = 0;
+                foreach (var j in jugadores)
+                {
+                    if (j.Equipos.Contains(e.Nombre))
+                    {
+                        contador++;
+                    }
+                }
+                if(contador > max)
+                {
+                    max = contador;
+                    mejorEquipo =  e.Nombre;
+                }
+            }
+            Console.WriteLine($"El equipo con más jugadores es: {mejorEquipo} con {max} jugadores");
 
         }
+        static void EquipoQueNoAlcanzanElCupo() 
+        {
+        }
+        static void EquipoSinJugadores() { }
     }
 }
