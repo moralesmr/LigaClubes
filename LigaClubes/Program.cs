@@ -733,7 +733,35 @@ namespace TP1
                             Console.Write("Ingrese el nombre del ");
                             Console.Write("equipo " + (i) + " :");
                             string equipo = Console.ReadLine();
-                            j.Equipos.Add(equipo);
+                            //Acá vuelvo a validar si el equipo existe
+                            bool existeEquipo = false;
+                            string categoria = "";
+                            foreach(var e in equipos)
+                            {
+                                if(e.Nombre.ToUpper() == equipo.ToUpper())
+                                {
+                                    existeEquipo = true;
+                                    categoria = e.Categoria;
+                                    break;
+                                }
+                            }
+                            if (existeEquipo)
+                            {
+                                if(EdadValida(categoria, j.Edad))
+                                {
+                                    j.Equipos.Add(equipo);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Edad no válida para ese equipo");
+                                    i--;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("El equipo no existe");
+                                i--;
+                            }
                         }
                         Console.WriteLine("--------------------------------");
                     }
@@ -792,6 +820,7 @@ namespace TP1
                     {
                         Console.WriteLine("Ingrese S o N");
                     }
+                    jugadores[index] = j;
                 }
                 else if (modificarlo == "N")
                 {
@@ -927,7 +956,23 @@ namespace TP1
 
             }
         }
-        static void JugadoresPorEquipo() { }
+        static void JugadoresPorEquipo() 
+        {
+            foreach(var e in equipos)
+            {
+                int contador = 0;
+                foreach(var j in jugadores)
+                {
+                    if (j.Equipos.Contains(e.Nombre))
+                    {
+                        contador++;
+                    }
+                }
+                Console.WriteLine($"{e.Nombre}: {contador} jugadores");
+            }
+            Console.WriteLine("-------------------------");
+
+        }
         static void EquipoConMasCantidadDeJugadores()
         {
             string mejorEquipo = "";
@@ -953,7 +998,42 @@ namespace TP1
         }
         static void EquipoQueNoAlcanzanElCupo() 
         {
+            foreach(var e in equipos)
+            {
+                int contador = 0;
+                foreach(var j in jugadores)
+                {
+                    if (j.Equipos.Contains(e.Nombre))
+                    {
+                        contador++;
+                    }
+                }
+                int minimo = (e.Categoria.ToUpper() == "VETERANOS") ? 10 : 9;
+
+                if (contador < minimo)
+                {
+                    Console.WriteLine($"{e.Nombre} NO cumple el mínimo ({contador}/{minimo})");
+                }
+            }
         }
-        static void EquipoSinJugadores() { }
+        static void EquipoSinJugadores() 
+        {
+            foreach (var e in equipos)
+            {
+                bool tieneJugadores = false;
+                foreach(var j in jugadores)
+                {
+                    if (j.Equipos.Contains(e.Nombre))
+                    {
+                        tieneJugadores = true;
+                        break;
+                    }
+                }
+                if (!tieneJugadores)
+                {
+                    Console.WriteLine($"El equipo: {e.Nombre}, no tiene jugadores");
+                }
+            }
+        }
     }
 }
