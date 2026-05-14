@@ -178,10 +178,41 @@ namespace TP1
 
             }
         }
+
+        static string GenerarNombreEquipo(string club, string categoria)
+        {
+            int contador = 0;
+
+            foreach (var e in equipos)
+            {
+                if (
+                    e.Club.ToUpper() == club.ToUpper() &&
+                    e.Categoria.ToUpper() == categoria.ToUpper()
+                   )
+                {
+                    contador++;
+                }
+            }
+
+            char letra = (char)('A' + contador);
+
+            return club + " " + letra + " " + categoria;
+        }
+
+        static bool CategoriaValida(string categoria)
+        {
+            return
+                categoria.ToUpper() == "INFANTILES" ||
+                categoria.ToUpper() == "CADETES" ||
+                categoria.ToUpper() == "JUVENILES" ||
+                categoria.ToUpper() == "PRIMERA" ||
+                categoria.ToUpper() == "VETERANOS";
+        }
+
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
-            Equipo equipo;
+            Equipo equipo = new Equipo();
 
             //CLUB
             Console.WriteLine("Ingrese el nombre del club:");
@@ -199,13 +230,7 @@ namespace TP1
 
                 equipo.Categoria = Console.ReadLine();
 
-                if (
-                    equipo.Categoria.ToUpper() == "INFANTILES" ||
-                    equipo.Categoria.ToUpper() == "CADETES" ||
-                    equipo.Categoria.ToUpper() == "JUVENILES" ||
-                    equipo.Categoria.ToUpper() == "PRIMERA" ||
-                    equipo.Categoria.ToUpper() == "VETERANOS"
-                   )
+                if (CategoriaValida(equipo.Categoria))
                 {
                     break;
                 }
@@ -213,25 +238,15 @@ namespace TP1
                 {
                     Console.WriteLine("Categoria no valida");
                 }
+                  
             }
 
             //GENERAR NOMBRE AUTOMATICO
-            int contador = 0;
 
-            foreach (var e in equipos)
-            {
-                if (
-                    e.Club.ToUpper() == equipo.Club.ToUpper() &&
-                    e.Categoria.ToUpper() == equipo.Categoria.ToUpper()
-                   )
-                {
-                    contador++;
-                }
-            }
-
-            char letra = (char)('A' + contador);
-
-            equipo.Nombre = equipo.Club + " " + letra;
+            equipo.Nombre = GenerarNombreEquipo(
+            equipo.Club,
+            equipo.Categoria
+            );
 
             equipos.Add(equipo);
 
@@ -242,6 +257,7 @@ namespace TP1
         static void BajaEquipos()
         {
             Console.WriteLine("Ingrese el nombre del equipo a eliminar:");
+            Console.WriteLine("Ejemplo: Boca A Infantiles");
             string nombre = Console.ReadLine();
 
             int index = -1;
@@ -300,6 +316,7 @@ namespace TP1
         static void ModificarEquipos()
         {
             Console.WriteLine("Ingrese el nombre del equipo a modificar:");
+            Console.WriteLine("Ejemplo: Boca A Infantiles");
             string nombre = Console.ReadLine();
 
             int index = -1;
@@ -322,6 +339,9 @@ namespace TP1
             {
                 Equipo e = equipos[index];
 
+                string[] partesNombre = e.Nombre.Split(' ');
+
+                string letraActual = partesNombre[1];
 
                 //MODIFICAR CLUB
                 Console.WriteLine("Club actual: " + e.Club);
@@ -332,10 +352,6 @@ namespace TP1
                 {
                     e.Club = nuevoClub;
 
-                    //MANTENER LETRA AUTOMATICA
-                    string letraActual = e.Nombre.Substring(e.Nombre.Length - 1);
-
-                    e.Nombre = e.Club + " " + letraActual;
                 }
 
                 //MODIFICAR CATEGORIA
@@ -345,13 +361,7 @@ namespace TP1
 
                 if (nuevaCategoria != "")
                 {
-                    if (
-                        nuevaCategoria.ToUpper() == "INFANTILES" ||
-                        nuevaCategoria.ToUpper() == "CADETES" ||
-                        nuevaCategoria.ToUpper() == "JUVENILES" ||
-                        nuevaCategoria.ToUpper() == "PRIMERA" ||
-                        nuevaCategoria.ToUpper() == "VETERANOS"
-                       )
+                    if (CategoriaValida(nuevaCategoria))
                     {
                         e.Categoria = nuevaCategoria;
                     }
@@ -361,9 +371,18 @@ namespace TP1
                     }
 
                 }
+                e.Nombre =
+                    e.Club +
+                    " " +
+                    letraActual +
+                    " " +
+                    e.Categoria;
+
                 equipos[index] = e;
 
                 Console.WriteLine("Equipo modificado correctamente");
+                Console.WriteLine("Nuevo nombre: " + e.Nombre);
+
                 Console.WriteLine("-------------------------");
             }
         }
