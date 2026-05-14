@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 /*
 Liga deportiva C#
@@ -70,6 +71,7 @@ namespace TP1
             public string Nombre;
             public string Apellido;
             public int Edad;
+            public string Categoria;
             public List<string> Equipos;
             public bool Seguro;
             public bool Afiliado;
@@ -88,7 +90,14 @@ namespace TP1
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Bienvenido al sistema de gestión de liga deportiva del GRUPO 33");
+            Console.WriteLine("- GRUPO 33 - TEMA 2");
+            Console.WriteLine("- Integrantes:");
+            Console.WriteLine("- Batalla Córdoba María Florencia");
+            Console.WriteLine("- Morales María Rosa");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Bienvenido al sistema");
+            Console.WriteLine("de gestión de liga deportiva");
+            Console.WriteLine("-------------------------");
             MostrarMenuPrincipal();
         }
         static void MostrarMenuPrincipal()
@@ -100,7 +109,7 @@ namespace TP1
                 Console.WriteLine("3 - Funcionalidades");
                 Console.WriteLine("4 - Reportes");
                 Console.WriteLine("5 - Salir");
-
+                Console.WriteLine("-------------------------");
                 string opcion = Console.ReadLine();
 
                 switch (opcion)
@@ -147,6 +156,7 @@ namespace TP1
         {
             while (true)
             {
+                Console.WriteLine("¿Que desea hacer?");
                 Console.WriteLine("1 - Alta de equipos");
                 Console.WriteLine("2 - Baja de equipos");
                 Console.WriteLine("3 - Modificacion de equipos");
@@ -169,7 +179,7 @@ namespace TP1
                         ModificarEquipos();
                         break;
                     case "4":
-                        Console.WriteLine("Usted salió del sistema de modificación de jugadores");
+                        Console.WriteLine("Usted salió del menú equipos");
                         return;
                     default:
                         Console.WriteLine("Ingrese una opción válida");
@@ -178,41 +188,47 @@ namespace TP1
 
             }
         }
-
-        static string GenerarNombreEquipo(string club, string categoria)
+        static string SeleccionarCategoria()
         {
-            int contador = 0;
-
-            foreach (var e in equipos)
+            while (true)
             {
-                if (
-                    e.Club.ToUpper() == club.ToUpper() &&
-                    e.Categoria.ToUpper() == categoria.ToUpper()
-                   )
+                Console.WriteLine("-------------------------");
+                Console.WriteLine("Seleccione una categoria:");
+                Console.WriteLine("1 - Infantiles");
+                Console.WriteLine("2 - Cadetes");
+                Console.WriteLine("3 - Juveniles");
+                Console.WriteLine("4 - Primera");
+                Console.WriteLine("5 - Veteranos");
+
+                string opcion = Console.ReadLine();
+
+                switch (opcion)
                 {
-                    contador++;
+                    case "1":
+                        return "Infantiles";
+
+                    case "2":
+                        return "Cadetes";
+
+                    case "3":
+                        return "Juveniles";
+
+                    case "4":
+                        return "Primera";
+
+                    case "5":
+                        return "Veteranos";
+
+                    default:
+                        Console.WriteLine("Ingrese una opción válida");
+                        break;
                 }
             }
-
-            char letra = (char)('A' + contador);
-
-            return club + " " + letra + " " + categoria;
         }
-
-        static bool CategoriaValida(string categoria)
-        {
-            return
-                categoria.ToUpper() == "INFANTILES" ||
-                categoria.ToUpper() == "CADETES" ||
-                categoria.ToUpper() == "JUVENILES" ||
-                categoria.ToUpper() == "PRIMERA" ||
-                categoria.ToUpper() == "VETERANOS";
-        }
-
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
-            Equipo equipo = new Equipo();
+            Equipo equipo;
 
             //CLUB
             Console.WriteLine("Ingrese el nombre del club:");
@@ -221,170 +237,142 @@ namespace TP1
             //CATEGORIA
             while (true)
             {
-                Console.WriteLine("Ingrese la categoria");
-                Console.WriteLine("Infantiles");
-                Console.WriteLine("Cadetes");
-                Console.WriteLine("Juveniles");
-                Console.WriteLine("Primera");
-                Console.WriteLine("Veteranos");
+                equipo.Categoria = SeleccionarCategoria();
 
-                equipo.Categoria = Console.ReadLine();
+                //GENERAR NOMBRE AUTOMATICO
+                int contador = 0;
 
-                if (CategoriaValida(equipo.Categoria))
+                foreach (var e in equipos)
                 {
-                    break;
+                    if (
+                        e.Club.ToUpper() == equipo.Club.ToUpper() &&
+                        e.Categoria.ToUpper() == equipo.Categoria.ToUpper()
+                       )
+                    {
+                        contador++;
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Categoria no valida");
-                }
-                  
+
+                char letra = (char)('A' + contador);
+
+                equipo.Nombre = equipo.Club + " " + letra;
+
+                equipos.Add(equipo);
+
+                Console.WriteLine("Equipo agregado correctamente");
+                Console.WriteLine("-------------------------");
+                Console.WriteLine("Nombre generado: " + equipo.Nombre);
+                Console.WriteLine("Categoría: " + equipo.Categoria);
+                Console.WriteLine("-------------------------");
+                break;
             }
-
-            //GENERAR NOMBRE AUTOMATICO
-
-            equipo.Nombre = GenerarNombreEquipo(
-            equipo.Club,
-            equipo.Categoria
-            );
-
-            equipos.Add(equipo);
-
-            Console.WriteLine("Equipo agregado correctamente");
-            Console.WriteLine("Nombre generado: " + equipo.Nombre);
-            Console.WriteLine("-------------------------");
         }
         static void BajaEquipos()
         {
-            Console.WriteLine("Ingrese el nombre del equipo a eliminar:");
-            Console.WriteLine("Ejemplo: Boca A Infantiles");
-            string nombre = Console.ReadLine();
-
-            int index = -1;
-
-            //BUSCAR EQUIPO
+            if (equipos.Count == 0)
+            {
+                Console.WriteLine("No hay equipos cargados aún");
+                return;
+            }
+            Console.WriteLine("Estos son los equipos disponibles: ");
             for (int i = 0; i < equipos.Count; i++)
             {
-                if (equipos[i].Nombre.ToUpper() == nombre.ToUpper())
+                Console.WriteLine($"{i + 1} - Club: {equipos[i].Nombre} - Categoria: {equipos[i].Categoria}");
+                Console.WriteLine("-------------------");
+            }
+
+            Console.WriteLine("Ingrese el numero del equipo a eliminar: ");
+            int opcion;
+
+            while (!int.TryParse(Console.ReadLine(), out opcion) ||
+                   opcion < 1 ||
+                   opcion > equipos.Count)
+            {
+                Console.WriteLine("Ingrese un numero valido:");
+                Console.WriteLine("-------------------");
+            }
+
+            int indice = opcion - 1;
+
+            //VALIDAR SI TIENE JUGADORES
+            bool tieneJugadores = false;
+
+            foreach (var j in jugadores)
+            {
+                if (j.Equipos.Contains(equipos[indice].Nombre))
                 {
-                    index = i;
+                    tieneJugadores = true;
                     break;
                 }
             }
 
-            if (index == -1)
+            if (tieneJugadores)
             {
-                Console.WriteLine("Equipo no encontrado");
+                Console.WriteLine("No se puede eliminar porque el equipo tiene jugadores");
+                Console.WriteLine("-------------------");
             }
             else
             {
-                //VALIDAR SI TIENE JUGADORES
-                bool tieneJugadores = false;
+                Console.WriteLine("¿Está realmente suguro?");
+                string seguro = Console.ReadLine();
 
-                foreach (var j in jugadores)
+                if (seguro.ToUpper() == "S")
                 {
-                    if (j.Equipos.Contains(equipos[index].Nombre))
-                    {
-                        tieneJugadores = true;
-                        break;
-                    }
+                    equipos.RemoveAt(indice);
+                    Console.WriteLine("-------------------");
+                    Console.WriteLine("Equipo eliminado correctamente");
+                    Console.WriteLine("-------------------");
                 }
-
-                if (tieneJugadores)
+                else if (seguro.ToUpper() == "N")
                 {
-                    Console.WriteLine("No se puede eliminar porque el equipo tiene jugadores");
+                    Console.WriteLine("-------------------");
+                    Console.WriteLine("El equipo no se eliminó");
+                    Console.WriteLine("-------------------");
                 }
                 else
                 {
-                    Console.WriteLine("Seguro que desea eliminarlo? S/N");
-                    string confirmar = Console.ReadLine().ToUpper();
-
-                    if (confirmar == "S")
-                    {
-                        equipos.RemoveAt(index);
-                        Console.WriteLine("Equipo eliminado");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Operacion cancelada");
-                    }
+                    Console.WriteLine($"{seguro} - No es un ingreso válido");
+                    Console.WriteLine("-------------------");
                 }
-            }
 
-            Console.WriteLine("-------------------------");
+            }
         }
+
         static void ModificarEquipos()
         {
-            Console.WriteLine("Ingrese el nombre del equipo a modificar:");
-            Console.WriteLine("Ejemplo: Boca A Infantiles");
-            string nombre = Console.ReadLine();
-
             int index = -1;
-
-            //BUSCAR EQUIPO
+            Equipo e = equipos[index];
+            Console.WriteLine("Equipos disponibles:");
             for (int i = 0; i < equipos.Count; i++)
             {
-                if (equipos[i].Nombre.ToUpper() == nombre.ToUpper())
-                {
-                    index = i;
-                    break;
-                }
+                Console.WriteLine($"{i + 1} - Nombre:{e.Nombre[i]} - Categoría: {e.Categoria[i]}");
             }
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Ingrese el numero del equipo a modificar:");
+            int opcion;
+            /*if(!int.TryParse(Console.ReadLine(), out opcion)
+                {
+                }*/
 
-            if (index == -1)
+
+            // COPIA DEL EQUIPO
+
+            Console.WriteLine("Categoria actual: " + e.Categoria);
+
+            Console.WriteLine("Desea modificar la categoria? S/N");
+            string modificar = Console.ReadLine().ToUpper();
+
+            if (modificar == "S")
             {
-                Console.WriteLine("Equipo no encontrado");
+                e.Categoria = SeleccionarCategoria();
             }
-            else
-            {
-                Equipo e = equipos[index];
 
-                string[] partesNombre = e.Nombre.Split(' ');
+            // GUARDAR CAMBIOS
+            equipos[index] = e;
 
-                string letraActual = partesNombre[1];
+            Console.WriteLine("Equipo modificado correctamente");
+            Console.WriteLine("-------------------------");
 
-                //MODIFICAR CLUB
-                Console.WriteLine("Club actual: " + e.Club);
-                Console.WriteLine("Ingrese nuevo club, sino apriete Enter para dejar igual:");
-                string nuevoClub = Console.ReadLine();
-
-                if (nuevoClub != "")
-                {
-                    e.Club = nuevoClub;
-
-                }
-
-                //MODIFICAR CATEGORIA
-                Console.WriteLine("Categoria actual: " + e.Categoria);
-                Console.WriteLine("Ingrese nueva categoria, sino apriete Enter para dejar igual:");
-                string nuevaCategoria = Console.ReadLine();
-
-                if (nuevaCategoria != "")
-                {
-                    if (CategoriaValida(nuevaCategoria))
-                    {
-                        e.Categoria = nuevaCategoria;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Categoria invalida");
-                    }
-
-                }
-                e.Nombre =
-                    e.Club +
-                    " " +
-                    letraActual +
-                    " " +
-                    e.Categoria;
-
-                equipos[index] = e;
-
-                Console.WriteLine("Equipo modificado correctamente");
-                Console.WriteLine("Nuevo nombre: " + e.Nombre);
-
-                Console.WriteLine("-------------------------");
-            }
         }
 
         /*
@@ -398,6 +386,7 @@ namespace TP1
         {
             while (true)
             {
+                Console.WriteLine("¿Que desea hacer?");
                 Console.WriteLine("1 - Alta de jugadores");
                 Console.WriteLine("2 - Baja de jugadores");
                 Console.WriteLine("3 - Modificacion de jugadores");
@@ -429,35 +418,68 @@ namespace TP1
 
             }
         }
-        static bool EdadValida(string categoria, int edad)
+
+        static void AsignarEquipos(ref Jugador jugador)
         {
-            switch (categoria.ToUpper())
+            Console.WriteLine("¿A cuantos equipos lo asignará?:");
+            int cantidad;
+            while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad <= 0)
             {
-                case "INFANTILES":
-                    return edad < 13;
-                case "CADETES":
-                    return edad >= 13 && edad <= 16;
-                case "JUVENILES":
-                    return edad > 16 && edad <= 18;
-                case "PRIMERA":
-                    return edad > 18;
-                case "VETERANOS":
-                    return edad > 35;
-                default:
-                    return false;
+                Console.WriteLine("Ingrese un número válido:");
+                Console.WriteLine("-------------------");
+            }
+            for (int i = 0; i < cantidad; i++)
+            {
+                Console.WriteLine($"Ingrese el numero del equipo {i + 1} a asignar:");
+                int opcion;
+                while (!int.TryParse(Console.ReadLine(), out opcion)
+                    || opcion < 1
+                    || opcion > equipos.Count
+                    || equipos[opcion - 1].Categoria.ToUpper() != jugador.Categoria.ToUpper())
+                {
+                    Console.WriteLine("Ingrese un número válido:");
+                    Console.WriteLine("-------------------");
+                }
+                jugador.Equipos.Add(equipos[opcion - 1].Nombre);
+            }
+
+            Console.WriteLine("Equipos asignados correctamente");
+            Console.WriteLine("-------------------");
+            for (int i = 0; i < jugador.Equipos.Count; i++)
+            {
+                Console.WriteLine($"{i + 1} - Equipo:{equipos[i].Nombre}");
+            }
+        }
+        static int ValidarDNI()
+        {
+            int dni;
+            while (true)
+            {
+                Console.WriteLine("Ingrese el DNI del jugador:");
+                while (!int.TryParse(Console.ReadLine(), out dni))
+                {
+                    Console.WriteLine("Ingrese solo números:");
+                }
+                if (dni <= 0)
+                {
+                    Console.WriteLine("El DNI debe ser un número positivo");
+                }
+                else if (dni < 10000000 || dni > 99999999)
+                {
+                    Console.WriteLine("El DNI debe tener entre 8 dígitos");
+                }
+                else
+                {
+                    return dni;
+                }
             }
         }
         static void AltaJugador()
         {
-            Jugador jugador;
+            Jugador jugador = new Jugador();
+            Equipo equipo = new Equipo();
 
-            int dni;
-            Console.WriteLine("Ingrese el DNI del jugador:");
-            while (!int.TryParse(Console.ReadLine(), out dni))
-            {
-                Console.WriteLine("Ingrese solo números:");
-            }
-            jugador.DNI = dni;
+            jugador.DNI = ValidarDNI();
 
             //VALIDACIÓN DE DNI
             bool existe = false;
@@ -491,57 +513,28 @@ namespace TP1
             {
                 Console.WriteLine("Ingrese una edad válida:");
             }
+            jugador.Categoria = ClasificarCategoria(jugador.Edad);
 
-            //INICIALIZAR LISTA PARA LOS EQUIPOS
-            jugador.Equipos = new List<string>();
+            Console.WriteLine($"Su categoría es: {jugador.Categoria}");
+            Console.WriteLine("-------------------");
 
-            Console.WriteLine("Cantidad de equipos asignados:");
-            int cantidad = int.Parse(Console.ReadLine());
+            //GUARDAR LOS INDICES VALIDOS
+            List<int> equiposDisponibles = new List<int>();
 
-            for (int i = 0; i < cantidad; i++)
+            if (equipos.Count > 0)
             {
-                Console.Write("Ingrese el nombre del ");
-                Console.Write("equipo " + (i + 1) + " :");
-                string equipo = Console.ReadLine();
-
-                bool existeEquipo = false;
-
-                foreach (var e in equipos)
+                Console.WriteLine("Equipos disponibles en su categoría:");
+                for (int i = 0; i < equipos.Count; i++)
                 {
-                    if (e.Nombre.ToUpper() == equipo.ToUpper())
+                    if (equipos[i].Categoria == jugador.Categoria)
                     {
-                        existeEquipo = true;
-                        break;
+                        Console.WriteLine($"{i + 1} - Equipo:{equipos[i].Nombre}");
+                        equiposDisponibles.Add(i);
                     }
                 }
-                if (existeEquipo)
-                {
-                    string categoria = "";
-                    foreach (var e in equipos)
-                    {
-                        if(e.Nombre.ToUpper() == equipo.ToUpper())
-                        {
-                            categoria = e.Categoria;
-                            break;
-                        }
-                    }
-                    if (EdadValida(categoria, jugador.Edad))
-                    {
-                        jugador.Equipos.Add(equipo);
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("La edad del jugador no es compatible con la categoria del equipo");
-                        i--;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("El equipo no existe");
-                    i--;
-                }
-
+                jugador.Equipos = new List<string>();
+                //INICIALIZAR LISTA DE EQUIPOS 
+                AsignarEquipos(ref jugador);
             }
 
             //SEGURO
@@ -566,6 +559,7 @@ namespace TP1
                 }
             }
 
+
             //AFILIADO
             while (true)
             {
@@ -587,12 +581,40 @@ namespace TP1
                     Console.WriteLine("Ingrese S o N");
                 }
             }
+
             jugadores.Add(jugador);
 
             Console.WriteLine("-------------------------");
             Console.WriteLine("Jugador agregado correctamente");
             Console.WriteLine("-------------------------");
         }
+
+        static string ClasificarCategoria(int edad)
+        {
+            if (edad >= 2 && edad < 13)
+            {
+                return "Infantiles";
+            }
+            else if (edad >= 13 && edad < 16)
+            {
+                return "Cadetes";
+            }
+            else if (edad >= 16 && edad < 18)
+            {
+                return "Juveniles";
+            }
+            else if (edad >= 18 && edad < 35)
+            {
+                return "Primera";
+            }
+            else if (edad >= 35 && edad < 100)
+            {
+                return "Veteranos";
+            }
+
+            return "";
+        }
+
         static void BajaJugador()
         {
             //ACA VA BAJA DE JUGADORES
@@ -620,7 +642,7 @@ namespace TP1
             }
             else
             {
-                Console.WriteLine("Jugador: " + jugadores[index].Nombre + jugadores[index].Apellido);
+                Console.WriteLine("Jugador: " + jugadores[index].Nombre + " " + jugadores[index].Apellido);
                 Console.Write("¿Seguro que querés eliminarlo? (S/N): ");
                 string confirmacion = Console.ReadLine().ToUpper();
 
@@ -731,9 +753,9 @@ namespace TP1
                     //INGRESO A MODIFICACIÓN DE EQUIPOS
                     Console.WriteLine("Equipos asignados:");
                     for (int i = 0; i < j.Equipos.Count; i++)
-                        {
-                            Console.WriteLine("Equipo " + (i + 1) + ": " + j.Equipos[i]);
-                        }
+                    {
+                        Console.WriteLine("Equipo " + (i + 1) + ": " + j.Equipos[i]);
+                    }
                     Console.WriteLine("--------------------------------");
 
                     Console.WriteLine("Desea modificarlos? S/N");
@@ -747,41 +769,6 @@ namespace TP1
                         Console.WriteLine("Cantidad de equipos a asignar: ");
                         int cantidad = int.Parse(Console.ReadLine());
 
-                        for (int i = 0; i < cantidad; i++)
-                        {
-                            Console.Write("Ingrese el nombre del ");
-                            Console.Write("equipo " + (i) + " :");
-                            string equipo = Console.ReadLine();
-                            //Acá vuelvo a validar si el equipo existe
-                            bool existeEquipo = false;
-                            string categoria = "";
-                            foreach(var e in equipos)
-                            {
-                                if(e.Nombre.ToUpper() == equipo.ToUpper())
-                                {
-                                    existeEquipo = true;
-                                    categoria = e.Categoria;
-                                    break;
-                                }
-                            }
-                            if (existeEquipo)
-                            {
-                                if(EdadValida(categoria, j.Edad))
-                                {
-                                    j.Equipos.Add(equipo);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Edad no válida para ese equipo");
-                                    i--;
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("El equipo no existe");
-                                i--;
-                            }
-                        }
                         Console.WriteLine("--------------------------------");
                     }
                     else if (modificar == "N")
@@ -927,6 +914,7 @@ namespace TP1
                     Console.WriteLine("Nombre: " + equipoListado.Nombre);
                     Console.WriteLine("Club: " + equipoListado.Club);
                     Console.WriteLine("Categoria: " + equipoListado.Categoria);
+
                 }
             }
         }
@@ -975,17 +963,18 @@ namespace TP1
 
             }
         }
-        static void JugadoresPorEquipo() 
+        static void JugadoresPorEquipo()
         {
-            foreach(var e in equipos)
+            foreach (var e in equipos)
             {
                 int contador = 0;
-                foreach(var j in jugadores)
+                foreach (var j in jugadores)
                 {
                     if (j.Equipos.Contains(e.Nombre))
                     {
                         contador++;
                     }
+
                 }
                 Console.WriteLine($"{e.Nombre}: {contador} jugadores");
             }
@@ -996,7 +985,7 @@ namespace TP1
         {
             string mejorEquipo = "";
             int max = 0;
-            foreach(var e in equipos)
+            foreach (var e in equipos)
             {
                 int contador = 0;
                 foreach (var j in jugadores)
@@ -1006,21 +995,21 @@ namespace TP1
                         contador++;
                     }
                 }
-                if(contador > max)
+                if (contador > max)
                 {
                     max = contador;
-                    mejorEquipo =  e.Nombre;
+                    mejorEquipo = e.Nombre;
                 }
             }
             Console.WriteLine($"El equipo con más jugadores es: {mejorEquipo} con {max} jugadores");
-
+            Console.WriteLine("-------------------------");
         }
-        static void EquipoQueNoAlcanzanElCupo() 
+        static void EquipoQueNoAlcanzanElCupo()
         {
-            foreach(var e in equipos)
+            foreach (var e in equipos)
             {
                 int contador = 0;
-                foreach(var j in jugadores)
+                foreach (var j in jugadores)
                 {
                     if (j.Equipos.Contains(e.Nombre))
                     {
@@ -1032,15 +1021,17 @@ namespace TP1
                 if (contador < minimo)
                 {
                     Console.WriteLine($"{e.Nombre} NO cumple el mínimo ({contador}/{minimo})");
+                    Console.WriteLine("-------------------------");
+
                 }
             }
         }
-        static void EquipoSinJugadores() 
+        static void EquipoSinJugadores()
         {
             foreach (var e in equipos)
             {
                 bool tieneJugadores = false;
-                foreach(var j in jugadores)
+                foreach (var j in jugadores)
                 {
                     if (j.Equipos.Contains(e.Nombre))
                     {
@@ -1051,6 +1042,8 @@ namespace TP1
                 if (!tieneJugadores)
                 {
                     Console.WriteLine($"El equipo: {e.Nombre}, no tiene jugadores");
+                    Console.WriteLine("-------------------------");
+
                 }
             }
         }
