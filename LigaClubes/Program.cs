@@ -313,7 +313,7 @@ namespace TP1
             }
             else
             {
-                Console.WriteLine("¿Está realmente suguro?");
+                Console.WriteLine("¿Está realmente seguro? S/N");
                 string seguro = Console.ReadLine();
 
                 if (seguro.ToUpper() == "S")
