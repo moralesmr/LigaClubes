@@ -225,6 +225,30 @@ namespace TP1
                 }
             }
         }
+
+        static bool ValidarEdadCategoria(int edad, string categoria)
+        {
+            switch (categoria)
+            {
+                case "Infantiles":
+                    return edad < 13;
+
+                case "Cadetes":
+                    return edad >= 13 && edad <= 16;
+
+                case "Juveniles":
+                    return edad > 16 && edad <= 18;
+
+                case "Primera":
+                    return edad >= 18;
+
+                case "Veteranos":
+                    return edad >= 35;
+
+                default:
+                    return false;
+            }
+        }
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
@@ -340,39 +364,127 @@ namespace TP1
 
         static void ModificarEquipos()
         {
-            int index = -1;
-            Equipo e = equipos[index];
+            if (equipos.Count == 0)
+            {
+                Console.WriteLine("No hay equipos cargados");
+                return;
+            }
+
             Console.WriteLine("Equipos disponibles:");
+
             for (int i = 0; i < equipos.Count; i++)
             {
-                Console.WriteLine($"{i + 1} - Nombre:{e.Nombre[i]} - Categoría: {e.Categoria[i]}");
+                Console.WriteLine($"{i + 1} - Nombre: {equipos[i].Nombre} - Categoria: {equipos[i].Categoria}");
             }
+
             Console.WriteLine("-------------------------");
             Console.WriteLine("Ingrese el numero del equipo a modificar:");
-            int opcion;
-            /*if(!int.TryParse(Console.ReadLine(), out opcion)
-                {
-                }*/
 
+            int opcion;
+
+            while (!int.TryParse(Console.ReadLine(), out opcion) ||
+                   opcion < 1 ||
+                   opcion > equipos.Count)
+            {
+                Console.WriteLine("Ingrese una opcion valida:");
+            }
+
+            int index = opcion - 1;
 
             // COPIA DEL EQUIPO
+            Equipo e = equipos[index];
 
+            Console.WriteLine("Equipo seleccionado:");
+            Console.WriteLine("Nombre: " + e.Nombre);
             Console.WriteLine("Categoria actual: " + e.Categoria);
 
-            Console.WriteLine("Desea modificar la categoria? S/N");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("¿Desea modificar la categoría? S/N");
+
             string modificar = Console.ReadLine().ToUpper();
 
             if (modificar == "S")
             {
-                e.Categoria = SeleccionarCategoria();
+                string nuevaCategoria = SeleccionarCategoria();
+
+                // VALIDAR JUGADORES DEL EQUIPO
+                bool jugadoresValidos = true;
+
+                foreach (var j in jugadores)
+                {
+                    if (j.Equipos.Contains(e.Nombre))
+                    {
+                        bool edadValida = ValidarEdadCategoria(j.Edad, nuevaCategoria);
+
+                        if (!edadValida)
+                        {
+                            
+                            Console.WriteLine($"El jugador {j.Nombre} {j.Apellido}");
+                            Console.WriteLine($"No cumple la edad para {nuevaCategoria}");
+                            
+                            jugadoresValidos = false;
+                        }
+                    }
+                }
+
+                if (jugadoresValidos)
+                {
+                    e.Categoria = nuevaCategoria;
+
+                    // GENERAR NUEVO NOMBRE AUTOMÁTICO
+                    int contador = 0;
+
+                    foreach (var equipo in equipos)
+                    {
+                        if (
+                            equipo.Club.ToUpper() == e.Club.ToUpper() &&
+                            equipo.Categoria.ToUpper() == e.Categoria.ToUpper() &&
+                            equipo.Nombre != e.Nombre
+                           )
+                        {
+                            contador++;
+                        }
+                    }
+
+                    char letra = (char)('A' + contador);
+
+                    string nombreAnterior = e.Nombre;
+
+                    e.Nombre = e.Club + " " + letra;
+
+                    // ACTUALIZAR NOMBRE EN JUGADORES
+                    for (int i = 0; i < jugadores.Count; i++)
+                    {
+                        for (int k = 0; k < jugadores[i].Equipos.Count; k++)
+                        {
+                            if (jugadores[i].Equipos[k] == nombreAnterior)
+                            {
+                                jugadores[i].Equipos[k] = e.Nombre;
+                            }
+                        }
+                    }
+
+                    equipos[index] = e;
+
+                    Console.WriteLine("Equipo modificado correctamente");
+                    Console.WriteLine("Nuevo nombre: " + e.Nombre);
+                    Console.WriteLine("Nueva categoría: " + e.Categoria);
+                    
+                }
+                else
+                {
+                    Console.WriteLine("No se puede modificar el equipo");
+                    Console.WriteLine("Hay jugadores incompatibles con la categoria");
+                }
             }
-
-            // GUARDAR CAMBIOS
-            equipos[index] = e;
-
-            Console.WriteLine("Equipo modificado correctamente");
-            Console.WriteLine("-------------------------");
-
+            else if (modificar == "N")
+            {
+                Console.WriteLine("No se realizaron cambios");
+            }
+            else
+            {
+                Console.WriteLine("Opcion invalida");
+            }
         }
 
         /*
