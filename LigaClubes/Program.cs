@@ -758,7 +758,7 @@ namespace TP1
             Console.WriteLine("Equipos disponibles:");
             for (int i = 0; i < equipos.Count; i++)
             {
-                if (equipos[i].Categoria.ToUpper() == jugador.Categoria.ToUpper()) ;
+                if (equipos[i].Categoria.ToUpper() == jugador.Categoria.ToUpper()) 
                 {
                     Console.WriteLine($"{i + 1} - Equipo:{equipos[i].Nombre} - Categoría:{equipos[i].Categoria}");
                     equiposDisponibles.Add(i);
