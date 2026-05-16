@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Collections.Generic;
+using System;
+
 
 /*
 Liga deportiva C#
@@ -105,6 +105,7 @@ namespace TP1
         {
             while (true)
             {
+                Console.WriteLine("¿Que desea hacer?");
                 Console.WriteLine("1 - ABM Equipos");
                 Console.WriteLine("2 - ABM Jugadores");
                 Console.WriteLine("3 - Funcionalidades");
@@ -232,41 +233,7 @@ namespace TP1
                 }
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        /*static bool ValidarEdadCategoria(int edad, string categoria)
-        {
-            switch (categoria)
-            {
-                case "Infantiles":
-                    return edad < 13;
 
-                case "Cadetes":
-                    return edad >= 13 && edad <= 16;
-
-                case "Juveniles":
-                    return edad > 16 && edad <= 18;
-
-                case "Primera":
-                    return edad >= 18;
-
-                case "Veteranos":
-                    return edad >= 35;
-
-                default:
-                    return false;
-            }
-        }*/
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        static string ObtenerClub(string nombreEquipo)
-        {
-            return nombreEquipo.Substring(0, nombreEquipo.LastIndexOf(" "));
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -294,6 +261,7 @@ namespace TP1
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
+            Console.WriteLine("--------------------------------");
             Equipo equipo;
 
             //CLUB
@@ -568,8 +536,6 @@ namespace TP1
                     Console.WriteLine("Nuevo nombre: " + e.Nombre);
                     Console.WriteLine("Nueva categoría: " + e.Categoria);
                     Console.WriteLine("--------------------------------");
-
-
                 }
                 else
                 {
@@ -648,33 +614,78 @@ namespace TP1
         /// <returns></returns>
         static void AsignarEquipos(ref Jugador jugador)
         {
-            Console.WriteLine("¿A cuantos equipos lo asignará?:");
+            jugador.Equipos = new List<string>();
+
+            List<int> equiposDisponibles = new List<int>();
+
+            Console.WriteLine("Equipos disponibles:");
+            Console.WriteLine("-------------------");
+
+            // BUSCAR EQUIPOS DE LA MISMA CATEGORIA
+            for (int i = 0; i < equipos.Count; i++)
+            {
+                if (equipos[i].Categoria == jugador.Categoria)
+                {
+                    equiposDisponibles.Add(i);
+
+                    Console.WriteLine($"{equiposDisponibles.Count} - Equipo: {equipos[i].Nombre} - Categoría: {equipos[i].Categoria}");
+                    Console.WriteLine("-------------------");
+                }
+            }
+
+            // VALIDAR SI HAY EQUIPOS
+            if (equiposDisponibles.Count == 0)
+            {
+                Console.WriteLine("No hay equipos disponibles en su categoría.");
+                Console.WriteLine("-------------------");
+                return;
+            }
+
+            Console.WriteLine("¿A cuántos equipos lo asignará?");
             int cantidad;
+
             while (!int.TryParse(Console.ReadLine(), out cantidad) || cantidad <= 0)
             {
                 Console.WriteLine("Ingrese un número válido:");
-                Console.WriteLine("-------------------");
-            }
-            for (int i = 0; i < cantidad; i++)
-            {
-                Console.WriteLine($"Ingrese el numero del equipo {i + 1} a asignar:");
-                int opcion;
-                while (!int.TryParse(Console.ReadLine(), out opcion)
-                    || opcion < 1
-                    || opcion > equipos.Count
-                    || equipos[opcion - 1].Categoria.ToUpper() != jugador.Categoria.ToUpper())
-                {
-                    Console.WriteLine("Ingrese un equipo según la categoría indicada:");
-                    Console.WriteLine("-------------------");
-                }
-                jugador.Equipos.Add(equipos[opcion - 1].Nombre);
             }
 
-            Console.WriteLine("Equipos asignados correctamente");
+            for (int i = 0; i < cantidad; i++)
+            {
+                Console.WriteLine($"Ingrese el número del equipo {i + 1}:");
+
+                int opcion;
+
+                while (!int.TryParse(Console.ReadLine(), out opcion) ||
+                       opcion < 1 ||
+                       opcion > equiposDisponibles.Count)
+                {
+                    Console.WriteLine("Ingrese una opción válida:");
+                }
+
+                int indiceReal = equiposDisponibles[opcion - 1];
+
+                string nombreEquipo = equipos[indiceReal].Nombre;
+
+                // EVITAR DUPLICADOS
+                if (jugador.Equipos.Contains(nombreEquipo))
+                {
+                    Console.WriteLine("El jugador ya está asignado a ese equipo.");
+                }
+                else
+                {
+                    jugador.Equipos.Add(nombreEquipo);
+
+                    Console.WriteLine("Equipo asignado correctamente");
+                    Console.WriteLine("-------------------");
+                }
+            }
+
+            Console.WriteLine("Equipos asignados:");
             Console.WriteLine("-------------------");
+
             for (int i = 0; i < jugador.Equipos.Count; i++)
             {
-                Console.WriteLine($"{i + 1} - Equipo:{jugador.Equipos[i]}");
+                Console.WriteLine($"{i + 1} - {jugador.Equipos[i]}");
             }
         }
         /// <summary>
@@ -743,7 +754,7 @@ namespace TP1
             //INGRESO DE EDAD
             Console.WriteLine("Ingrese la edad del jugador:");
             //Para que no se rompa si el usuario pone letra pusimos el TryParse
-            while (!int.TryParse(Console.ReadLine(), out jugador.Edad))
+            while (!int.TryParse(Console.ReadLine(), out jugador.Edad) || jugador.Edad <= 0)
             {
                 Console.WriteLine("Ingrese una edad válida:");
             }
@@ -753,26 +764,8 @@ namespace TP1
             Console.WriteLine("-------------------");
 
             //GUARDAR LOS INDICES VALIDOS
-            List<int> equiposDisponibles = new List<int>();
+            //List<int> equiposDisponibles = new List<int>();
 
-            Console.WriteLine("Equipos disponibles:");
-            for (int i = 0; i < equipos.Count; i++)
-            {
-                if (equipos[i].Categoria.ToUpper() == jugador.Categoria.ToUpper()) 
-                {
-                    Console.WriteLine($"{i + 1} - Equipo:{equipos[i].Nombre} - Categoría:{equipos[i].Categoria}");
-                    equiposDisponibles.Add(i);
-                    Console.WriteLine("-------------------");
-                }
-                if (equiposDisponibles.Count == 0)
-                {
-                    Console.WriteLine("No hay equipos disponibles en su categoría.");
-                    Console.WriteLine("El jugador no fue cargado.");
-                    Console.WriteLine("-------------------");
-                    return;
-                }
-            }
-            jugador.Equipos = new List<string>();
             AsignarEquipos(ref jugador);
 
             //SEGURO
@@ -1026,10 +1019,18 @@ namespace TP1
                 Console.WriteLine("--------------------------------");
             }
 
-            Console.WriteLine("Equipos asignados:");
-            for (int i = 0; i < j.Equipos.Count; i++)
+            if (j.Equipos != null && j.Equipos.Count > 0)
             {
-                Console.WriteLine($"{i + 1} - Equipo " + (i + 1) + ": " + j.Equipos[i]);
+                Console.WriteLine("Equipos asignados:");
+
+                for (int i = 0; i < j.Equipos.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1} - {j.Equipos[i]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("El jugador no tiene equipos asignados.");
             }
 
             Console.WriteLine("--------------------------------");
@@ -1119,7 +1120,7 @@ namespace TP1
         {
             while (true)
             {
-                Console.WriteLine("Menú funcionalidades");
+                Console.WriteLine("Menú funcionalidades: ");
                 Console.WriteLine("1 - Lista de jugadores afiliados");
                 Console.WriteLine("2 - Lista de jugadores por equipos");
                 Console.WriteLine("3 - Salir");
@@ -1238,6 +1239,7 @@ namespace TP1
         {
             while (true)
             {
+                Console.WriteLine("¿Qué reporte necesita ver?");
                 Console.WriteLine("1 - Cantidad de jugadores por equipo");
                 Console.WriteLine("2 - Equipo con mayor cantidad de jugadores");
                 Console.WriteLine("3 - Equipos que no alcanzan el cupo mínimo requerido");
