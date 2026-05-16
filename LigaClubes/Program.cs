@@ -88,12 +88,22 @@ namespace TP1
         }
 
         static List<Equipo> equipos = new List<Equipo>();
+
+        /// <summary>
+        /// Genera un identificador unico para un equipo
+        /// </summary>
+        /// <param name="e">Equipo del cual se obtendra el identificador</param>
+        /// <returns>Retorna un string con el nombre y categoria del equipo</returns>
         static string ObtenerIdentificadorEquipo(Equipo e)
         {
             return e.Nombre + "|" + e.Categoria;
         }
 
-
+        /// <summary>
+        /// Funcion principal del programa
+        /// Muestra el menu inicial del sistema
+        /// </summary>
+        /// <param name="args">Argumentos enviados por consola</param>
         static void Main(string[] args)
         {
             Console.WriteLine("- GRUPO 33 - TEMA 2");
@@ -106,6 +116,11 @@ namespace TP1
             Console.WriteLine("-------------------------");
             MostrarMenuPrincipal();
         }
+
+        /// <summary>
+        /// Muestra el menu principal del sistema
+        /// Permite acceder a equipos, jugadores, funcionalidades y reportes
+        /// </summary>
         static void MostrarMenuPrincipal()
         {
             while (true)
@@ -157,10 +172,11 @@ namespace TP1
         * Modificación*/
 
         //-------------------------------------ABM de equipos
+
         /// <summary>
-        /// 
+        /// Muestra el menú ABM de equipos
+        /// Permite dar de alta, baja y modificar equipos
         /// </summary>
-        /// <returns></returns>
         static void MenuABMEquipos()
         {
             while (true)
@@ -197,10 +213,11 @@ namespace TP1
 
             }
         }
+
         /// <summary>
-        /// 
+        /// Permite seleccionar una categoria
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna la categoria seleccionada</returns>
         static string SeleccionarCategoria()
         {
             while (true)
@@ -240,9 +257,14 @@ namespace TP1
         }
 
         /// <summary>
-        /// 
+        /// Valida que el nuevo nombre pertenezca al mismo club
         /// </summary>
-        /// <returns></returns>
+        /// <param name="nombreActual">Nombre actual del equipo</param>
+        /// <param name="nuevoNombre">Nuevo nombre ingresado</param>
+        /// <returns>
+        /// Retorna true si el equipo pertenece al mismo club
+        /// Retorna false si el nombre es invalido
+        /// </returns>
         static bool ValidarMismoClub(string nombreActual, string nuevoNombre)
         {
             if (!nombreActual.Contains(" ") || !nuevoNombre.Contains(" "))
@@ -259,10 +281,11 @@ namespace TP1
             return clubActual.ToUpper() == nuevoClub.ToUpper();
 
         }
+
         /// <summary>
-        /// 
+        /// Da de alta un nuevo equipo
+        /// Genera automaticamente el nombre segun club y categoria
         /// </summary>
-        /// <returns></returns>
         static void AltaEquipos()
         {
             Console.WriteLine("Alta de equipos");
@@ -306,10 +329,11 @@ namespace TP1
                 break;
             }
         }
+
         /// <summary>
-        /// 
+        /// Elimina un equipo del sistema
+        /// Valida que no tenga jugadores asignados
         /// </summary>
-        /// <returns></returns>
         static void BajaEquipos()
         {
             if (equipos.Count == 0)
@@ -380,10 +404,11 @@ namespace TP1
 
             }
         }
+
         /// <summary>
-        /// 
+        /// Modifica el nombre o categoria de un equipo
+        /// Actualiza los jugadores asociados
         /// </summary>
-        /// <returns></returns>
         static void ModificarEquipos()
         {
             if (equipos.Count == 0)
@@ -561,10 +586,7 @@ namespace TP1
                 Console.WriteLine("-------------------------");
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+
 
         /*
         - ABM de Jugadores
@@ -573,10 +595,12 @@ namespace TP1
         * Modificación*/
 
         //-------------------------------------ABM de Jugadores
+
         /// <summary>
-        /// 
+        /// Muestra el menu ABM de jugadores
+        /// Permite alta, baja y modificacion
         /// </summary>
-        /// <returns></returns>
+        
         static void MenuABMJugadores()
         {
             while (true)
@@ -613,10 +637,11 @@ namespace TP1
 
             }
         }
+
         /// <summary>
-        /// 
+        /// Asigna equipos a un jugador segun su categoria
         /// </summary>
-        /// <returns></returns>
+        /// <param name="jugador">Jugador al que se asignaran equipos</param>
         static void AsignarEquipos(ref Jugador jugador)
         {
             jugador.Equipos = new List<string>();
@@ -695,10 +720,11 @@ namespace TP1
                 Console.WriteLine($"{i + 1} - {partes[0]} - Categoría: {partes[1]}");
             }
         }
+
         /// <summary>
-        /// 
+        /// Valida el DNI ingresado
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retorna un DNI valido</returns>
         static int ValidarDNI()
         {
             int dni;
@@ -723,10 +749,11 @@ namespace TP1
                 }
             }
         }
+
         /// <summary>
-        /// 
+        /// Da de alta un nuevo jugador
+        /// Valida DNI, edad y asignacion de equipos
         /// </summary>
-        /// <returns></returns>
         static void AltaJugador()
         {
             Jugador jugador = new Jugador();
@@ -826,10 +853,12 @@ namespace TP1
             Console.WriteLine("Jugador agregado correctamente");
             Console.WriteLine("-------------------------");
         }
+
         /// <summary>
-        /// 
+        /// Clasifica una categoria según la edad
         /// </summary>
-        /// <returns></returns>
+        /// <param name="edad">Edad del jugador</param>
+        /// <returns>Retorna la categoría correspondiente</returns>
         static string ClasificarCategoria(int edad)
         {
             if (edad < 13)
@@ -845,10 +874,10 @@ namespace TP1
 
             return "";
         }
+
         /// <summary>
-        /// 
+        /// Elimina un jugador del sistema mediante DNI
         /// </summary>
-        /// <returns></returns>
         static void BajaJugador()
         {
             //ACA VA BAJA DE JUGADORES
@@ -892,10 +921,11 @@ namespace TP1
 
             Console.WriteLine("-------------------------");
         }
+
         /// <summary>
-        /// 
+        /// Modifica los datos de un jugador
+        /// Permite cambiar nombre, apellido, edad, equipos y estados
         /// </summary>
-        /// <returns></returns>
         static void ModificarJugador()
         {
             Console.WriteLine("Ingrese el DNI del jugador que desea modificar:");
@@ -1119,10 +1149,10 @@ namespace TP1
         * Club*/
 
         //-------------------------------------Funcionalidades
+
         /// <summary>
-        /// 
+        /// Muestra el menu de funcionalidades adicionales
         /// </summary>
-        /// <returns></returns>
         static void MenuFuncionalidades()
         {
             while (true)
@@ -1152,10 +1182,10 @@ namespace TP1
 
             }
         }
+
         /// <summary>
-        /// 
+        /// Lista todos los jugadores afiliados
         /// </summary>
-        /// <returns></returns>
         static void ListarPorAfiliados()
         {
             Console.WriteLine("Jugadores afiliados:");
@@ -1176,10 +1206,10 @@ namespace TP1
             }
             Console.WriteLine("-------------------------");
         }
+
         /// <summary>
-        /// 
+        /// Lista los jugadores pertenecientes a un equipo
         /// </summary>
-        /// <returns></returns>
         static void ListarPorEquipo()
         {
             if (equipos.Count == 0)
@@ -1245,10 +1275,10 @@ namespace TP1
         - Equipos sin jugadores*/
 
         //-------------------------------------Reportes
+
         /// <summary>
-        /// 
+        /// Muestra el menu de reportes del sistema
         /// </summary>
-        /// <returns></returns>
         static void MenuReportes()
         {
             while (true)
@@ -1286,10 +1316,10 @@ namespace TP1
 
             }
         }
+
         /// <summary>
-        /// 
+        /// Muestra la cantidad de jugadores por equipo
         /// </summary>
-        /// <returns></returns>
         static void JugadoresPorEquipo()
         {
             foreach (var e in equipos)
@@ -1311,10 +1341,10 @@ namespace TP1
 
             Console.WriteLine("-------------------------");
         }
+
         /// <summary>
-        /// 
+        /// Muestra el equipo con mayor cantidad de jugadores
         /// </summary>
-        /// <returns></returns>
         static void EquipoConMasCantidadDeJugadores()
         {
             string mejorEquipo = "";
@@ -1347,10 +1377,10 @@ namespace TP1
             Console.WriteLine($"El equipo con más jugadores es: {mejorEquipo} - {mejorCategoria} con {max} jugadores");
             Console.WriteLine("-------------------------");
         }
+
         /// <summary>
-        /// 
+        /// Muestra los equipos que no alcanzan el cupo minimo requerido
         /// </summary>
-        /// <returns></returns>
         static void EquipoQueNoAlcanzanElCupo()
         {
             foreach (var e in equipos)
@@ -1376,10 +1406,10 @@ namespace TP1
                 }
             }
         }
+
         /// <summary>
-        /// 
+        /// Muestra los equipos que no tienen jugadores asignados
         /// </summary>
-        /// <returns></returns>
         static void EquipoSinJugadores()
         {
             foreach (var e in equipos)
