@@ -87,6 +87,10 @@ namespace TP1
         }
 
         static List<Equipo> equipos = new List<Equipo>();
+        static string ObtenerIdentificadorEquipo(Equipo e)
+        {
+            return e.Nombre + "|" + e.Categoria;
+        }
 
 
         static void Main(string[] args)
@@ -337,7 +341,7 @@ namespace TP1
 
             foreach (var j in jugadores)
             {
-                if (j.Equipos != null && j.Equipos.Contains(equipos[indice].Nombre))
+                if (j.Equipos != null && j.Equipos.Contains(ObtenerIdentificadorEquipo(equipos[indice])))
                 {
                     tieneJugadores = true;
                     break;
@@ -430,7 +434,7 @@ namespace TP1
                     bool mismoClub = ValidarMismoClub(e.Nombre, nuevoNombre);
                     if (mismoClub)
                     {
-                        string nombreAnterior = e.Nombre;
+                        string nombreAnterior = ObtenerIdentificadorEquipo(e);
                         e.Nombre = nuevoNombre;
                         for (int i = 0; i < jugadores.Count; i++)
                         {
@@ -438,7 +442,7 @@ namespace TP1
                             {
                                 if (jugadores[i].Equipos[k] == nombreAnterior)
                                 {
-                                    jugadores[i].Equipos[k] = nuevoNombre;
+                                    jugadores[i].Equipos[k] = nuevoNombre + "|" + e.Categoria;
                                 }
                             }
                         }
@@ -477,7 +481,7 @@ namespace TP1
 
                 foreach (var j in jugadores)
                 {
-                    if (j.Equipos != null && j.Equipos.Contains(e.Nombre))
+                    if (j.Equipos != null && j.Equipos.Contains(ObtenerIdentificadorEquipo(e)))
                     {
                         string categoria = ClasificarCategoria(j.Edad);
 
@@ -513,7 +517,7 @@ namespace TP1
 
                     char letra = (char)('A' + contador);
 
-                    string nombreAnterior = e.Nombre;
+                    string nombreAnterior = ObtenerIdentificadorEquipo(e);
 
                     e.Nombre = e.Club + " " + letra;
 
@@ -524,7 +528,7 @@ namespace TP1
                         {
                             if (jugadores[i].Equipos[k] == nombreAnterior)
                             {
-                                jugadores[i].Equipos[k] = e.Nombre;
+                                jugadores[i].Equipos[k] = ObtenerIdentificadorEquipo(e);
                             }
                         }
                     }
@@ -664,16 +668,16 @@ namespace TP1
 
                 int indiceReal = equiposDisponibles[opcion - 1];
 
-                string nombreEquipo = equipos[indiceReal].Nombre;
+                string identificadorEquipo = ObtenerIdentificadorEquipo(equipos[indiceReal]);
 
                 // EVITAR DUPLICADOS
-                if (jugador.Equipos.Contains(nombreEquipo))
+                if (jugador.Equipos.Contains(identificadorEquipo))
                 {
                     Console.WriteLine("El jugador ya está asignado a ese equipo.");
                 }
                 else
                 {
-                    jugador.Equipos.Add(nombreEquipo);
+                    jugador.Equipos.Add(identificadorEquipo);
 
                     Console.WriteLine("Equipo asignado correctamente");
                     Console.WriteLine("-------------------");
@@ -685,7 +689,9 @@ namespace TP1
 
             for (int i = 0; i < jugador.Equipos.Count; i++)
             {
-                Console.WriteLine($"{i + 1} - {jugador.Equipos[i]}");
+                string[] partes = jugador.Equipos[i].Split('|');
+
+                Console.WriteLine($"{i + 1} - {partes[0]} - Categoría: {partes[1]}");
             }
         }
         /// <summary>
@@ -1181,36 +1187,43 @@ namespace TP1
                 Console.WriteLine("-------------------------");
                 return;
             }
+
             Console.WriteLine("-------------------------");
             Console.WriteLine("Equipos disponibles:");
+
             for (int i = 0; i < equipos.Count; i++)
             {
                 Console.WriteLine($"{i + 1} - {equipos[i].Nombre} - Categoría: {equipos[i].Categoria}");
             }
+
             Console.WriteLine("-------------------------");
             Console.WriteLine("Ingrese el número del equipo:");
 
             int opcion;
+
             while (!int.TryParse(Console.ReadLine(), out opcion) ||
-            opcion < 1 ||
-            opcion > equipos.Count)
+                   opcion < 1 ||
+                   opcion > equipos.Count)
             {
                 Console.WriteLine("Ingrese un número válido:");
             }
 
-            string equipoSeleccionado = equipos[opcion - 1].Nombre;
+            Equipo equipoSeleccionado = equipos[opcion - 1];
+
+            string identificadorEquipo = ObtenerIdentificadorEquipo(equipoSeleccionado);
 
             Console.WriteLine("-------------------------");
-            Console.WriteLine("Jugadores del equipo: " + equipoSeleccionado);
+            Console.WriteLine("Jugadores del equipo: " + equipoSeleccionado.Nombre + " - " + equipoSeleccionado.Categoria);
             Console.WriteLine("-------------------------");
 
             int contador = 0;
 
             foreach (var j in jugadores)
             {
-                if (j.Equipos != null && j.Equipos.Contains(equipoSeleccionado))
+                if (j.Equipos != null && j.Equipos.Contains(identificadorEquipo))
                 {
                     contador++;
+
                     Console.WriteLine($"{contador} - DNI: {j.DNI} - {j.Nombre} {j.Apellido} - Edad: {j.Edad} - Categoría: {j.Categoria}");
                 }
             }
@@ -1281,18 +1294,21 @@ namespace TP1
             foreach (var e in equipos)
             {
                 int contador = 0;
+
+                string identificadorEquipo = ObtenerIdentificadorEquipo(e);
+
                 foreach (var j in jugadores)
                 {
-                    if (j.Equipos != null && j.Equipos.Contains(e.Nombre))
+                    if (j.Equipos != null && j.Equipos.Contains(identificadorEquipo))
                     {
                         contador++;
                     }
-
                 }
-                Console.WriteLine($"{e.Nombre}: {contador} jugadores");
-            }
-            Console.WriteLine("-------------------------");
 
+                Console.WriteLine($"{e.Nombre} - {e.Categoria}: {contador} jugadores");
+            }
+
+            Console.WriteLine("-------------------------");
         }
         /// <summary>
         /// 
@@ -1301,24 +1317,33 @@ namespace TP1
         static void EquipoConMasCantidadDeJugadores()
         {
             string mejorEquipo = "";
-            int max = 0;
+            string mejorCategoria = "";
+
+            int max = -1;
+
             foreach (var e in equipos)
             {
                 int contador = 0;
+
+                string identificadorEquipo = ObtenerIdentificadorEquipo(e);
+
                 foreach (var j in jugadores)
                 {
-                    if (j.Equipos != null && j.Equipos.Contains(e.Nombre))
+                    if (j.Equipos != null && j.Equipos.Contains(identificadorEquipo))
                     {
                         contador++;
                     }
                 }
+
                 if (contador > max)
                 {
                     max = contador;
                     mejorEquipo = e.Nombre;
+                    mejorCategoria = e.Categoria;
                 }
             }
-            Console.WriteLine($"El equipo con más jugadores es: {mejorEquipo} con {max} jugadores");
+
+            Console.WriteLine($"El equipo con más jugadores es: {mejorEquipo} - {mejorCategoria} con {max} jugadores");
             Console.WriteLine("-------------------------");
         }
         /// <summary>
@@ -1330,20 +1355,23 @@ namespace TP1
             foreach (var e in equipos)
             {
                 int contador = 0;
+
+                string identificadorEquipo = ObtenerIdentificadorEquipo(e);
+
                 foreach (var j in jugadores)
                 {
-                    if (j.Equipos != null && j.Equipos.Contains(e.Nombre))
+                    if (j.Equipos != null && j.Equipos.Contains(identificadorEquipo))
                     {
                         contador++;
                     }
                 }
+
                 int minimo = (e.Categoria.ToUpper() == "VETERANOS") ? 10 : 9;
 
                 if (contador < minimo)
                 {
-                    Console.WriteLine($"{e.Nombre} NO cumple el mínimo ({contador}/{minimo})");
+                    Console.WriteLine($"{e.Nombre} - {e.Categoria} NO cumple el mínimo ({contador}/{minimo})");
                     Console.WriteLine("-------------------------");
-
                 }
             }
         }
@@ -1356,19 +1384,22 @@ namespace TP1
             foreach (var e in equipos)
             {
                 bool tieneJugadores = false;
+
+                string identificadorEquipo = ObtenerIdentificadorEquipo(e);
+
                 foreach (var j in jugadores)
                 {
-                    if (j.Equipos != null && j.Equipos.Contains(e.Nombre))
+                    if (j.Equipos != null && j.Equipos.Contains(identificadorEquipo))
                     {
                         tieneJugadores = true;
                         break;
                     }
                 }
+
                 if (!tieneJugadores)
                 {
-                    Console.WriteLine($"El equipo: {e.Nombre}, no tiene jugadores");
+                    Console.WriteLine($"El equipo: {e.Nombre} - {e.Categoria}, no tiene jugadores");
                     Console.WriteLine("-------------------------");
-
                 }
             }
         }
